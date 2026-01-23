@@ -17,16 +17,15 @@ model User {
   email     String   @unique
   password  String
   createdAt DateTime @default(now())
-  role      UserRole
   updatedAt DateTime @updatedAt
 
   @@map("users")
 }
 
 model Product {
-  id String @id @default(uuid())
-  name String
-  price Decimal @db.Decimal(10, 2)
+  id        String   @id @default(uuid())
+  name      String
+  price     Decimal  @db.Decimal(10, 2)
 
-  @@map("Products")
+  @@map("products")
 }

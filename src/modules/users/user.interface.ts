@@ -9,4 +9,9 @@ export interface UserResponseDTO {
   name: string;
   email: string;
   createdAt: Date;
+  updatedAt: Date;
+}
+export interface UpdateUserDTO {
+  name?: string;
+  email?: string;
 }

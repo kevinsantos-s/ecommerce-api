@@ -3,6 +3,13 @@ import { CreateUserDTO, UserResponseDTO, UpdateUserDTO } from "./user.interface"
 import bcrypt from "bcrypt";
 import { AppError } from "../../utils/errors";
 
+const userSelect = {
+    id: true,
+    name: true,
+    email: true,
+    createdAt: true,
+    updatedAt: true,
+}
 export class UserService {
   async create(data: CreateUserDTO): Promise<UserResponseDTO> {
     const { email, password, name } = data;
@@ -27,13 +34,7 @@ export class UserService {
 
     const newUser = await prisma.user.create({
       data: { email: email, password: hashedPassword, name: name },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        createdAt: true,
-        updatedAt: true,
-      }
+      select: userSelect
     });
 
     return newUser;
@@ -42,13 +43,7 @@ export class UserService {
   async findById(id: string): Promise<UserResponseDTO> {
     const user = await prisma.user.findUnique({
       where: { id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        createdAt: true,
-        updatedAt: true,
-      }
+      select: userSelect
     });
     if (!user) {
       throw new AppError("Usuário não encontrado", 404);
@@ -58,13 +53,7 @@ export class UserService {
 
     async findAll(): Promise<UserResponseDTO[]>{
     const user = await prisma.user.findMany({
-      select: { 
-        id: true,
-        name: true,
-        email: true,
-        createdAt: true,
-        updatedAt: true,
-      }
+      select: userSelect
     })
     return user;
   }
@@ -97,13 +86,7 @@ export class UserService {
         name: data.name,
         email: data.email 
       },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        createdAt: true,
-        updatedAt: true,
-      }
+      select: userSelect
     })
     return updatedUser;
   }
@@ -117,13 +100,7 @@ export class UserService {
     }
     const deleted = await prisma.user.delete({
       where: { id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        createdAt: true,
-        updatedAt: true,
-      }
+      select: userSelect
     });
     return deleted;    
   }

@@ -4,5 +4,5 @@ import { userRoutes } from "./users/user.routes";
 
 export const routes = Router();
 
-routes.use("/users/create", userRoutes);
+routes.use("/users", userRoutes);
 //routes.use("/products", productsRoutes);

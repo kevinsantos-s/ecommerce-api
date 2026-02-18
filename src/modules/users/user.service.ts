@@ -1,5 +1,5 @@
 import { prisma } from "../../client";
-import { CreateUserDTO, UserResponseDTO } from "./user.interface";
+import { CreateUserDTO, UserResponseDTO, UpdateUserDTO } from "./user.interface";
 import bcrypt from "bcrypt";
 import { AppError } from "../../utils/errors";
 
@@ -27,13 +27,104 @@ export class UserService {
 
     const newUser = await prisma.user.create({
       data: { email: email, password: hashedPassword, name: name },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true,
+      }
     });
 
-    return {
-      id: newUser.id,
-      name: newUser.name,
-      email: newUser.email,
-      createdAt: newUser.createdAt,
-    };
+    return newUser;
+  }
+
+  async findById(id: string): Promise<UserResponseDTO> {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true,
+      }
+    });
+    if (!user) {
+      throw new AppError("Usuário não encontrado", 404);
+    }
+    return user;
+  }
+
+    async findAll(): Promise<UserResponseDTO[]>{
+    const user = await prisma.user.findMany({
+      select: { 
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true,
+      }
+    })
+    return user;
+  }
+
+  async update(id: string, data: UpdateUserDTO): Promise<UserResponseDTO>{
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if(!user){
+      throw new AppError("Usuário não encontrado", 404);
+    }
+    if(data.email && !data.email.includes("@")){
+      throw new AppError("Email Inválido", 400)
+    }
+    if(!data.name && !data.email){
+      throw new AppError("Nenhum dado para atualizar", 400)
+    }
+    if(data.email){
+    const emailExists = await prisma.user.findUnique({
+      where: { email: data.email }
+    });
+    if (emailExists && emailExists.id !== id) {
+      throw new AppError("Email já existente", 409)
+    }
+  }
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: { 
+        name: data.name,
+        email: data.email 
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true,
+      }
+    })
+    return updatedUser;
+  }
+
+  async delete(id: string) {
+    const idExists = await prisma.user.findUnique({
+      where: { id }
+    })
+    if(!idExists){
+      throw new AppError("Id não existente", 404)
+    }
+    const deleted = await prisma.user.delete({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+        updatedAt: true,
+      }
+    });
+    return deleted;    
   }
 }

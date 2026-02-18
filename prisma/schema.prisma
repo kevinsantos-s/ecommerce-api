@@ -7,8 +7,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
+enum UserRole{
   ADMIN
+  USER
 }
 
 model User {
@@ -16,17 +17,17 @@ model User {
   name      String
   email     String   @unique
   password  String
+  role      UserRole @default(USER)
   createdAt DateTime @default(now())
-  role      UserRole
   updatedAt DateTime @updatedAt
 
   @@map("users")
 }
 
 model Product {
-  id String @id @default(uuid())
-  name String
-  price Decimal @db.Decimal(10, 2)
+  id        String   @id @default(uuid())
+  name      String
+  price     Decimal  @db.Decimal(10, 2)
 
-  @@map("Products")
+  @@map("products")
 }

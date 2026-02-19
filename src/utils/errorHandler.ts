@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { ResponseHandler } from "./responseHandler";
 
 export class AppError extends Error {
   statusCode: number;
@@ -9,9 +10,9 @@ export class AppError extends Error {
   }
 }
 
-export function handleError(res: Response, error: unknown) {
+export function errorHandler(res: Response, error: unknown) {
   if (error instanceof AppError) {
-    return res.status(error.statusCode).json(error.message);
+    return ResponseHandler.error(res, error.message, error.statusCode);
   }
-  return res.status(500).json("Erro interno do servidor");
+  return ResponseHandler.error(res, "Erro interno do servidor", 500);
 }

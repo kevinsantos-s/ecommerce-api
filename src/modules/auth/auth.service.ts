@@ -20,7 +20,7 @@ export class AuthService {
     const match = await bcrypt.compare(password, findEmail.password);
 
     if (!match) {
-      throw new AppError("Senha incorreta!", 401);
+      throw new AppError("Login Inválido", 401);
     }
     const token = jwt.sign(
       { id: findEmail.id, role: findEmail.role },

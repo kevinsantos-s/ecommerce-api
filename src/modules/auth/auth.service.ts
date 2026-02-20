@@ -15,7 +15,7 @@ export class AuthService {
       where: { email },
     });
     if (!findEmail) {
-      throw new AppError("Email não encontrado", 404);
+      throw new AppError("Login Inválido", 401);
     }
     const match = await bcrypt.compare(password, findEmail.password);
 

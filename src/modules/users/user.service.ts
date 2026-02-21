@@ -3,7 +3,7 @@ import {
   CreateUserDTO,
   UserResponseDTO,
   UpdateUserDTO,
-} from "./user.interface";
+} from "./user.types";
 import bcrypt from "bcrypt";
 import { AppError } from "../../utils/errorHandler";
 
@@ -18,20 +18,12 @@ export class UserService {
   async create(data: CreateUserDTO): Promise<UserResponseDTO> {
     const { email, password, name } = data;
 
-    if (!email || !password || !name) {
-      throw new AppError("Insira todos os campos!", 400);
-    }
-
     const alreadyExists = await prisma.user.findUnique({
       where: { email },
     });
 
     if (alreadyExists) {
       throw new AppError("Já existe um usuário com este Email!", 409);
-    }
-
-    if (!email.includes("@")) {
-      throw new AppError("Email inválido!", 400);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -69,9 +61,6 @@ export class UserService {
 
     if (!user) {
       throw new AppError("Usuário não encontrado", 404);
-    }
-    if (data.email && !data.email.includes("@")) {
-      throw new AppError("Email Inválido", 400);
     }
     if (!data.name && !data.email) {
       throw new AppError("Nenhum dado para atualizar", 400);

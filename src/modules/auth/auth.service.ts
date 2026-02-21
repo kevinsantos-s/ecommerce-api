@@ -1,6 +1,6 @@
 import { prisma } from "../../client";
 import { AppError } from "../../utils/errorHandler";
-import { LoginDTO } from "./auth.interface";
+import { LoginDTO } from "./auth.types";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -8,9 +8,6 @@ export class AuthService {
   async auth(data: LoginDTO) {
     const { email, password } = data;
 
-    if (!email || !password) {
-      throw new AppError("Insira todos os campos!", 400);
-    }
     const findEmail = await prisma.user.findUnique({
       where: { email },
     });

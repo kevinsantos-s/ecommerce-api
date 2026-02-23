@@ -8,8 +8,40 @@ export class AuthController {
 
   async auth(req: Request, res: Response) {
     try {
-      const login = await this.service.auth(req.body);
-      return ResponseHandler.sucess(res, login);
+      const { acessToken, refreshToken } = await this.service.auth(req.body);
+
+      res.cookie("token", acessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        maxAge: 15 * 60 * 1000,
+      });
+
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        path: "/auth/refresh",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+      return ResponseHandler.sucess(res, null, "Login realizado com sucesso");
+    } catch (error) {
+      return errorHandler(res, error);
+    }
+  }
+
+  async refresh(req: Request, res: Response) {
+    try {
+      const acessToken = await this.service.refresh(req.cookies.refreshToken);
+
+           res.cookie("accessToken", acessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 15 * 60 * 1000
+        })
+
+      return ResponseHandler.sucess(res, null);
     } catch (error) {
       return errorHandler(res, error);
     }

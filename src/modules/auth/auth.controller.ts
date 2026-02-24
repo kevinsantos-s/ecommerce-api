@@ -10,7 +10,7 @@ export class AuthController {
     try {
       const { acessToken, refreshToken } = await this.service.auth(req.body);
 
-      res.cookie("token", acessToken, {
+      res.cookie("acessToken", acessToken, {
         httpOnly: true,
         secure: true,
         sameSite: "strict",
@@ -34,7 +34,7 @@ export class AuthController {
     try {
       const acessToken = await this.service.refresh(req.cookies.refreshToken);
 
-           res.cookie("accessToken", acessToken, {
+           res.cookie("acessToken", acessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",

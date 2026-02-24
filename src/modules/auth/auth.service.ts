@@ -1,6 +1,7 @@
 import { prisma } from "../../client";
 import { AppError } from "../../utils/errorHandler";
-import { LoginDTO } from "./auth.interface";
+import { ResponseHandler } from "../../utils/responseHandler";
+import { LoginDTO, TokenPayload } from "./auth.types";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -8,9 +9,6 @@ export class AuthService {
   async auth(data: LoginDTO) {
     const { email, password } = data;
 
-    if (!email || !password) {
-      throw new AppError("Insira todos os campos!", 400);
-    }
     const findEmail = await prisma.user.findUnique({
       where: { email },
     });
@@ -22,11 +20,39 @@ export class AuthService {
     if (!match) {
       throw new AppError("Login Inválido", 401);
     }
-    const token = jwt.sign(
+    const acessToken = jwt.sign(
       { id: findEmail.id, role: findEmail.role },
       process.env.JWT_SECRET!,
-      { expiresIn: "1d" }
+      { expiresIn: "15m" }
     );
-    return token;
+    const refreshToken = jwt.sign(
+      { id: findEmail.id, role: findEmail.role },
+      process.env.JWT_REFRESHTOKEN!,
+      { expiresIn: "7d" }
+    );
+    return { acessToken, refreshToken };
+  }
+
+  async refresh(refreshToken: string) {
+    const decoded = jwt.verify(
+      refreshToken,
+      process.env.JWT_REFRESHTOKEN!
+    ) as TokenPayload;
+
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.id },
+    });
+
+    if (!user) {
+      throw new AppError("Usuário não encontrado", 404);
+    }
+
+    const accessToken = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET!,
+      { expiresIn: "15m" }
+    );
+
+    return accessToken;
   }
 }

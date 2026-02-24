@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { ZodSchema } from "zod";
+import { ZodType } from "zod";
 import { ResponseHandler } from "../utils/responseHandler";
 
 export function validateData(schema: {
-  body?: ZodSchema;
-  params?: ZodSchema;
-  query?: ZodSchema;
+  body?: ZodType;
+  params?: ZodType;
+  query?: ZodType;
 }) {
   return (req: Request, res: Response, next: NextFunction) => {
     if (schema.body) {

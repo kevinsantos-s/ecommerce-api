@@ -7,5 +7,5 @@ export const authRoutes = Router();
 
 const controller = new AuthController();
 
-authRoutes.post("/login", validateData({ body: loginSchema }), controller.auth.bind(controller));
-authRoutes.post("/refresh", controller.refresh.bind(controller));
+authRoutes.post("/login", validateData({ body: loginSchema }), (req, res) => controller.auth(req, res));
+authRoutes.post("/refresh", (req, res) => controller.refresh(req, res));

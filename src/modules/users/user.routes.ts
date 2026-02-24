@@ -8,8 +8,8 @@ export const userRoutes = Router();
 
 const controller = new UserController();
 
-userRoutes.post("/", validateData({ body: createUserSchema }), controller.create.bind(controller));
-userRoutes.get("/:id", authenticateToken, validateData({ params: idParamSchema }), controller.findById.bind(controller));
-userRoutes.get("/", authenticateToken,controller.findAll.bind(controller));
-userRoutes.put("/:id", authenticateToken, validateData({ params: idParamSchema, body: updateUserSchema }), controller.update.bind(controller));
-userRoutes.delete("/:id", authenticateToken, validateData({ params: idParamSchema }), controller.delete.bind(controller));
+userRoutes.post("/", validateData({ body: createUserSchema }), (req, res) => controller.create(req, res));
+userRoutes.get("/:id", authenticateToken, validateData({ params: idParamSchema }), (req, res) => controller.findById(req, res));
+userRoutes.get("/", authenticateToken, (req, res) => controller.findAll(req, res));
+userRoutes.put("/:id", authenticateToken, validateData({ params: idParamSchema, body: updateUserSchema }), (req, res) => controller.update(req, res));
+userRoutes.delete("/:id", authenticateToken, validateData({ params: idParamSchema }), (req, res) => controller.delete(req, res));

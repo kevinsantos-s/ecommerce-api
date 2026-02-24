@@ -16,9 +16,9 @@ export class UserController {
     }
   }
 
-  async findById(req: Request<{ id: string }>, res: Response) {
+  async findById(req: Request, res: Response) {
     try {
-      const { id } = req.params;
+      const id  = req.params.id as string;
       const user = await this.service.findById(id);
       return ResponseHandler.sucess(res, user);
     } catch (error) {
@@ -35,9 +35,9 @@ export class UserController {
     }
   }
 
-  async update(req: Request<{ id: string }>, res: Response) {
+  async update(req: Request, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const user = await this.service.update(id, req.body);
       return ResponseHandler.sucess(res, user);
     } catch (error) {
@@ -45,9 +45,9 @@ export class UserController {
     }
   }
 
-  async delete(req: Request<{ id: string }>, res: Response) {
+  async delete(req: Request, res: Response) {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const user = await this.service.delete(id);
       return ResponseHandler.sucess(res, user);
     } catch (error) {

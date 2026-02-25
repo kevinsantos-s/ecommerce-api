@@ -10,6 +10,7 @@ datasource db {
 enum UserRole{
   ADMIN
   USER
+  SELLER
 }
 
 model User {
@@ -25,9 +26,53 @@ model User {
 }
 
 model Product {
-  id        String   @id @default(uuid())
-  name      String
-  price     Decimal  @db.Decimal(10, 2)
+  id         String   @id @default(uuid())
+  name       String
+  brandId    String
+  categoryId String
+  image      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  variants   ProductVariant[] 
 
+  brand      Brand    @relation(fields: [brandId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
   @@map("products")
+}
+
+model ProductVariant{
+  id         String @id @default(uuid())
+  price      Decimal @db.Decimal(10, 2)
+  size       String
+  color      String
+  stock      Int
+  productId  String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+
+  product   Product  @relation(fields: [productId], references: [id])
+  @@map("productsvariants")
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  products  Product[]
+
+  @@map("categories")
+}
+
+model Brand {
+  id        String    @id @default(uuid())
+  name      String
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  products  Product[]
+  
+  @@map("brands")
 }

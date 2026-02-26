@@ -10,7 +10,7 @@ export const userRoutes = Router();
 const controller = new UserController();
 
 userRoutes.post("/", validateData({ body: createUserSchema }), (req, res) => controller.create(req, res));
-userRoutes.get("/:id", authenticateToken,  authorizeRole("ADMIN"), validateData({ params: idParamSchema }), (req, res) => controller.findById(req, res));
+userRoutes.get("/:id", authenticateToken,  authorizeRole("USER", "SELLER", "ADMIN"), validateData({ params: idParamSchema }), (req, res) => controller.findById(req, res));
 userRoutes.get("/", authenticateToken, authorizeRole("ADMIN"), (req, res) => controller.findAll(req, res));
-userRoutes.put("/:id", authenticateToken, authorizeRole("USER"), validateData({ params: idParamSchema, body: updateUserSchema }), (req, res) => controller.update(req, res));
-userRoutes.delete("/:id", authenticateToken,  authorizeRole("USER"), validateData({ params: idParamSchema }), (req, res) => controller.delete(req, res));
+userRoutes.put("/:id", authenticateToken, authorizeRole("USER", "SELLER", "ADMIN"), validateData({ params: idParamSchema, body: updateUserSchema }), (req, res) => controller.update(req, res));
+userRoutes.delete("/:id", authenticateToken,  authorizeRole("USER", "SELLER", "ADMIN"), validateData({ params: idParamSchema }), (req, res) => controller.delete(req, res));

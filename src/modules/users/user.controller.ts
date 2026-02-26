@@ -18,7 +18,7 @@ export class UserController {
 
   async findById(req: Request, res: Response) {
     try {
-      const id  = req.params.id as string;
+      const id = req.params.id as string;
       const user = await this.service.findById(id);
       return ResponseHandler.sucess(res, user);
     } catch (error) {
@@ -38,7 +38,16 @@ export class UserController {
   async update(req: Request, res: Response) {
     try {
       const id = req.params.id as string;
+
+      if (!req.user) {
+        return ResponseHandler.unauthorized(res);
+      }
+      if (req.user.role !== "ADMIN" && req.user.id !== id) {
+        return ResponseHandler.forbidden(res);
+      }
+
       const user = await this.service.update(id, req.body);
+
       return ResponseHandler.sucess(res, user);
     } catch (error) {
       return errorHandler(res, error);
@@ -48,6 +57,14 @@ export class UserController {
   async delete(req: Request, res: Response) {
     try {
       const id = req.params.id as string;
+
+      if (!req.user) {
+        return ResponseHandler.unauthorized(res);
+      }
+      if (req.user.role !== "ADMIN" && req.user.id !== id) {
+        return ResponseHandler.forbidden(res);
+      }
+
       const user = await this.service.delete(id);
       return ResponseHandler.sucess(res, user);
     } catch (error) {

@@ -8,9 +8,9 @@ export class AuthController {
 
   async auth(req: Request, res: Response) {
     try {
-      const { acessToken, refreshToken } = await this.service.auth(req.body);
+      const { accessToken, refreshToken } = await this.service.auth(req.body);
 
-      res.cookie("acessToken", acessToken, {
+      res.cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: true,
         sameSite: "strict",
@@ -32,9 +32,9 @@ export class AuthController {
 
   async refresh(req: Request, res: Response) {
     try {
-      const acessToken = await this.service.refresh(req.cookies.refreshToken);
+      const accessToken = await this.service.refresh(req.cookies.refreshToken);
 
-           res.cookie("acessToken", acessToken, {
+           res.cookie("accessToken", accessToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "strict",

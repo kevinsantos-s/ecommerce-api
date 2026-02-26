@@ -20,7 +20,7 @@ export class AuthService {
     if (!match) {
       throw new AppError("Login Inválido", 401);
     }
-    const acessToken = jwt.sign(
+    const accessToken = jwt.sign(
       { id: findEmail.id, role: findEmail.role },
       process.env.JWT_SECRET!,
       { expiresIn: "15m" }
@@ -30,7 +30,7 @@ export class AuthService {
       process.env.JWT_REFRESHTOKEN!,
       { expiresIn: "7d" }
     );
-    return { acessToken, refreshToken };
+    return { accessToken, refreshToken };
   }
 
   async refresh(refreshToken: string) {

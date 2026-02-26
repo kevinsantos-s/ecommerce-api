@@ -49,6 +49,9 @@ export class UserService {
 
   async findAll(): Promise<UserResponseDTO[]> {
     const user = await prisma.user.findMany({
+      where: {
+        role: {not: "ADMIN"}
+      },
       select: userSelect,
     });
     return user;

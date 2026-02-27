@@ -7,62 +7,106 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole{
+enum UserRole {
   ADMIN
   USER
   SELLER
 }
 
+enum SellerStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  role      UserRole @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  password      String
+  role          UserRole @default(USER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  sellerProfile Seller?
+
+  addresses Address[]
+  cart      Cart?
+  orders    Order[]
 
   @@map("users")
 }
 
+model Seller {
+  id          String       @id @default(uuid())
+  userId      String       @unique
+  cnpj        String       @unique
+  razaoSocial String
+  status      SellerStatus @default(PENDING)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  user        User         @relation(fields: [userId], references: [id])
+  categories  Category[]
+  brands      Brand[]
+  products    Product[]
+
+  @@map("seller")
+}
+
 model Product {
-  id         String   @id @default(uuid())
+  id         String           @id @default(uuid())
   name       String
   brandId    String
   categoryId String
   image      String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  variants   ProductVariant[] 
+  sellerId   String
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  variants   ProductVariant[]
 
-  brand      Brand    @relation(fields: [brandId], references: [id])
-  category   Category @relation(fields: [categoryId], references: [id])
+  brand    Brand    @relation(fields: [brandId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+  seller   Seller   @relation(fields: [sellerId], references: [id])
+
   @@map("products")
 }
 
-model ProductVariant{
-  id         String @id @default(uuid())
-  price      Decimal @db.Decimal(10, 2)
-  size       String
-  color      String
-  stock      Int
-  productId  String
+model ProductVariant {
+  id        String  @id @default(uuid())
+  price     Decimal @db.Decimal(10, 2)
+  size      String
+  color     String
+  stock     Int
+  productId String
+
+  cartItems  CartItem[]
+  orderItems OrderItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  product Product @relation(fields: [productId], references: [id])
 
-  product   Product  @relation(fields: [productId], references: [id])
   @@map("productsvariants")
 }
 
 model Category {
   id        String    @id @default(uuid())
   name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  sellerId  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   products  Product[]
+  seller    Seller    @relation(fields: [sellerId], references: [id])
 
+  @@unique([name, sellerId])
   @@map("categories")
 }
 
@@ -70,9 +114,83 @@ model Brand {
   id        String    @id @default(uuid())
   name      String
   image     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  sellerId  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   products  Product[]
-  
+  seller    Seller    @relation(fields: [sellerId], references: [id])
+
+  @@unique([name, sellerId])
   @@map("brands")
+}
+
+model Address {
+  id           String   @id @default(uuid())
+  userId       String
+  street       String
+  number       String
+  complement   String?
+  neighborhood String
+  city         String
+  state        String
+  zipCode      String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id])
+  orders       Order[]
+
+  @@map("addresses")
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  user      User       @relation(fields: [userId], references: [id])
+  items     CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id               String         @id @default(uuid())
+  cartId           String
+  productVariantId String
+  quantity         Int
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  cart             Cart           @relation(fields: [cartId], references: [id])
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+
+  @@map("cart_items")
+}
+
+model Order {
+  id        String      @id @default(uuid())
+  userId    String
+  addressId String
+  status    OrderStatus @default(PENDING)
+  total     Decimal     @db.Decimal(10, 2)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  user      User        @relation(fields: [userId], references: [id])
+  address   Address     @relation(fields: [addressId], references: [id])
+  items     OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id               String         @id @default(uuid())
+  orderId          String
+  productVariantId String
+  quantity         Int
+  priceAtPurchase  Decimal        @db.Decimal(10, 2)
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  order            Order          @relation(fields: [orderId], references: [id])
+  productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
+
+  @@map("order_items")
 }

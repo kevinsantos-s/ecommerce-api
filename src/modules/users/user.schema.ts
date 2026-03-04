@@ -1,9 +1,5 @@
 import { z } from "zod";
 
-export const idParamSchema = z.object({
-  id: z.uuid(),
-});
-
 export const createUserSchema = z.object({
     name: z.string({ message: "Nome precisa ser inserido" }).min(2, { message: "Nome deve ter no mínimo 2 caracteres" }),
     email: z.email({ message: "Email inválido" }),

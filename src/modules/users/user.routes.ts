@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { UserController } from "./user.controller";
 import { validateData } from "../../middleware/validate.middleware";
-import { createUserSchema, idParamSchema, updateUserSchema } from "./user.schema";
+import { createUserSchema, updateUserSchema } from "./user.schema";
 import { authenticateToken } from "../auth/auth.middleware";
 import { authorizeRole } from "../../middleware/role.middleware";
 import { ROLES } from "../../config/roles";
+import { idParamSchema } from "../../utils/schemas";
 
 export const userRoutes = Router();
 

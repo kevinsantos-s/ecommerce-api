@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { CategoryController } from "./category.controller";
-import { createCategorySchema, idParamSchema, updateCategorySchema } from "./category.schema";
+import { createCategorySchema, updateCategorySchema } from "./category.schema";
 import { ROLES } from "../../config/roles";
 import { validateData } from "../../middleware/validate.middleware";
 import { authenticateToken } from "../auth/auth.middleware";
 import { authorizeRole } from "../../middleware/role.middleware"; 
+import { idParamSchema } from "../../utils/schemas";
 
 export const categoryRoutes = Router();
 

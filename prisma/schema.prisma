@@ -7,39 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum UserRole {
-  ADMIN
-  USER
-  SELLER
-}
-
-enum SellerStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-enum OrderStatus {
-  PENDING
-  CONFIRMED
-  SHIPPED
-  DELIVERED
-  CANCELLED
-}
-
 model User {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   name          String
-  email         String   @unique
+  email         String    @unique
   password      String
-  role          UserRole @default(USER)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  role          UserRole  @default(USER)
+  addresses     Address[]
+  cart          Cart?
+  orders        Order[]
   sellerProfile Seller?
-
-  addresses Address[]
-  cart      Cart?
-  orders    Order[]
 
   @@map("users")
 }
@@ -52,10 +31,9 @@ model Seller {
   status      SellerStatus @default(PENDING)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  user        User         @relation(fields: [userId], references: [id])
-  categories  Category[]
   brands      Brand[]
   products    Product[]
+  user        User         @relation(fields: [userId], references: [id])
 
   @@map("seller")
 }
@@ -65,48 +43,41 @@ model Product {
   name       String
   brandId    String
   categoryId String
-  image      String?
-  sellerId   String
   createdAt  DateTime         @default(now())
+  image      String?
   updatedAt  DateTime         @updatedAt
+  sellerId   String
+  brand      Brand            @relation(fields: [brandId], references: [id])
+  category   Category         @relation(fields: [categoryId], references: [id])
+  seller     Seller           @relation(fields: [sellerId], references: [id])
   variants   ProductVariant[]
-
-  brand    Brand    @relation(fields: [brandId], references: [id])
-  category Category @relation(fields: [categoryId], references: [id])
-  seller   Seller   @relation(fields: [sellerId], references: [id])
 
   @@map("products")
 }
 
 model ProductVariant {
-  id        String  @id @default(uuid())
-  price     Decimal @db.Decimal(10, 2)
-  size      String
-  color     String
-  stock     Int
-  productId String
-
+  id         String      @id @default(uuid())
+  price      Decimal     @db.Decimal(10, 2)
+  size       String
+  color      String
+  stock      Int
+  productId  String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
   cartItems  CartItem[]
   orderItems OrderItem[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  product Product @relation(fields: [productId], references: [id])
+  product    Product     @relation(fields: [productId], references: [id])
 
   @@map("productsvariants")
 }
 
 model Category {
   id        String    @id @default(uuid())
-  name      String
-  sellerId  String
+  name      String    @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   products  Product[]
-  seller    Seller    @relation(fields: [sellerId], references: [id])
 
-  @@unique([name, sellerId])
   @@map("categories")
 }
 
@@ -114,11 +85,11 @@ model Brand {
   id        String    @id @default(uuid())
   name      String
   image     String?
-  sellerId  String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  products  Product[]
+  sellerId  String
   seller    Seller    @relation(fields: [sellerId], references: [id])
+  products  Product[]
 
   @@unique([name, sellerId])
   @@map("brands")
@@ -147,8 +118,8 @@ model Cart {
   userId    String     @unique
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
-  user      User       @relation(fields: [userId], references: [id])
   items     CartItem[]
+  user      User       @relation(fields: [userId], references: [id])
 
   @@map("carts")
 }
@@ -174,9 +145,9 @@ model Order {
   total     Decimal     @db.Decimal(10, 2)
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
-  user      User        @relation(fields: [userId], references: [id])
-  address   Address     @relation(fields: [addressId], references: [id])
   items     OrderItem[]
+  address   Address     @relation(fields: [addressId], references: [id])
+  user      User        @relation(fields: [userId], references: [id])
 
   @@map("orders")
 }
@@ -193,4 +164,24 @@ model OrderItem {
   productVariant   ProductVariant @relation(fields: [productVariantId], references: [id])
 
   @@map("order_items")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+  SELLER
+}
+
+enum SellerStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
 }

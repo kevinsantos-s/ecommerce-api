@@ -9,26 +9,11 @@ import {
 export class CategoryService {
   async create(
     data: CreateCategoryDTO,
-    userId: string
   ): Promise<CategoryResponseDTO> {
     const { name } = data;
 
-    const seller = await prisma.seller.findUnique({
-      where: { userId },
-      select: { id: true },
-    });
-
-    if (!seller) {
-      throw new AppError("Vendendor não encontrado", 404);
-    }
-
     const alreadyExists = await prisma.category.findUnique({
-      where: {
-        name_sellerId: {
-          name,
-          sellerId: seller.id,
-        },
-      },
+      where: {name},     
     });
 
     if (alreadyExists) {
@@ -36,7 +21,7 @@ export class CategoryService {
     }
 
     const newCategory = await prisma.category.create({
-      data: { name, sellerId: seller.id },
+      data: { name },
       select: {
         id: true,
         name: true,
@@ -77,23 +62,12 @@ export class CategoryService {
     return category;
   }
 
-  async update(data: UpdateCategoryDTO, userId: string, id: string): Promise<CategoryResponseDTO> {
+  async update(data: UpdateCategoryDTO, id: string): Promise<CategoryResponseDTO> {
     const { name } = data;
-
-    const seller = await prisma.seller.findUnique({
-      where: { userId },
-      select: { id: true },
-    });
-
-    if (!seller) {
-      throw new AppError("Vendendor não encontrado", 404);
-    }
 
     const alreadyExists = await prisma.category.findFirst({
       where: {
-        name,
-        sellerId: seller.id,
-        NOT: { id },
+        name, NOT: { id },
       },
     });
 
@@ -102,7 +76,7 @@ export class CategoryService {
     }
 
     const updatedCategory = await prisma.category.update({
-      where: { id, sellerId: seller.id },
+      where: { id },
       data: { name },
       select: {
         id: true,
@@ -114,18 +88,10 @@ export class CategoryService {
     return updatedCategory;
   }
 
-  async delete(id: string, userId: string){
-    const seller = await prisma.seller.findUnique({
-      where: { userId },
-      select: { id: true },
-    });
-
-    if (!seller) {
-      throw new AppError("Vendendor não encontrado", 404);
-    }
+  async delete( id: string ){
 
     const deleteCategory = await prisma.category.delete({
-      where: {id, sellerId: seller.id},
+      where: { id },
     })
 
     return deleteCategory;

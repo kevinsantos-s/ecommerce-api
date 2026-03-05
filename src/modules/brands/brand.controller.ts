@@ -26,7 +26,7 @@ export class BrandController {
   }
   async findAll(req: Request, res: Response) {
     try {
-      const sellerId = req.params.sellerId as string;
+      const sellerId = req.query.sellerId as string;
       const brand = await this.service.findAll(sellerId);
       return ResponseHandler.sucess(res, brand);
     } catch (error) {

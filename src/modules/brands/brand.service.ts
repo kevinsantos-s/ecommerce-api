@@ -82,6 +82,18 @@ export class BrandService {
       throw new AppError("Vendedor não encontrado", 404);
     }
 
+    const alreadyExistsBrand = await prisma.brand.findFirst({
+      where: {
+         name,
+         sellerId: seller.id,
+         NOT: {id}
+        },
+    })
+
+    if(alreadyExistsBrand){
+      throw new AppError("Marca já existente", 409)
+    }
+
     const updatedBrand = await prisma.brand.update({
       where: { id, sellerId: seller.id },
       data: { name, image },

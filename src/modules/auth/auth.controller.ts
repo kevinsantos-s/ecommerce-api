@@ -24,7 +24,7 @@ export class AuthController {
         path: "/auth/refresh",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
-      return ResponseHandler.sucess(res, null, "Login realizado com sucesso");
+      return ResponseHandler.success(res, null, "Login realizado com sucesso");
     } catch (error) {
       return errorHandler(res, error);
     }
@@ -41,7 +41,7 @@ export class AuthController {
         maxAge: 15 * 60 * 1000,
       });
 
-      return ResponseHandler.sucess(res, null);
+      return ResponseHandler.success(res, null);
     } catch (error) {
       return errorHandler(res, error);
     }
@@ -53,7 +53,7 @@ export class AuthController {
         path: "/auth/refresh",
       });
       res.clearCookie("accessToken");
-      return ResponseHandler.sucess(res, null, "Deslogado com sucesso");
+      return ResponseHandler.success(res, null, "Deslogado com sucesso");
     } catch (error) {
       return errorHandler(res, error);
     }

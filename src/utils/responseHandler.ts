@@ -17,7 +17,7 @@ export class ResponseHandler {
     });
   }
 
-  public static sucess(
+  public static success(
     res: Response,
     data?: unknown,
     message = "Operação realizada com sucesso.",

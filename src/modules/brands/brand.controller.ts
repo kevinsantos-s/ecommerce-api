@@ -19,7 +19,7 @@ export class BrandController {
       const id = req.params.id as string;
 
       const brand = await this.service.findById(id);
-      return ResponseHandler.sucess(res, brand);
+      return ResponseHandler.success(res, brand);
     } catch (error) {
       return errorHandler(res, error);
     }
@@ -28,7 +28,7 @@ export class BrandController {
     try {
       const sellerId = req.query.sellerId as string;
       const brand = await this.service.findAll(sellerId);
-      return ResponseHandler.sucess(res, brand);
+      return ResponseHandler.success(res, brand);
     } catch (error) {
       return errorHandler(res, error);
     }
@@ -38,7 +38,7 @@ export class BrandController {
       const id = req.params.id as string;
       const userId = req.user!.id
       const brand = await this.service.update(req.body, id, userId);
-      return ResponseHandler.sucess(res, brand);
+      return ResponseHandler.success(res, brand);
     } catch (error) {
       return errorHandler(res, error);
     }
@@ -48,7 +48,7 @@ export class BrandController {
       const id = req.params.id as string;
       const userId = req.user!.id
       const brand = await this.service.delete(id, userId);
-      return ResponseHandler.sucess(res, brand);
+      return ResponseHandler.success(res, brand);
     } catch (error) {
       return errorHandler(res, error);
     }

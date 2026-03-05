@@ -19,7 +19,7 @@ export class CategoryController {
     try {
       const id = req.params.id as string;
       const category = await this.service.findById(id);
-      return ResponseHandler.sucess(res, category);
+      return ResponseHandler.success(res, category);
     } catch (error) {
       return errorHandler(res, error);
     }
@@ -28,7 +28,7 @@ export class CategoryController {
   async findAll(req: Request, res: Response) {
     try {
       const category = await this.service.findAll();
-      return ResponseHandler.sucess(res, category);
+      return ResponseHandler.success(res, category);
     } catch (error) {
       return errorHandler(res, error);
     }
@@ -38,7 +38,7 @@ export class CategoryController {
     try {
       const id = req.params.id as string;
       const category = await this.service.update(req.body, id);
-      return ResponseHandler.sucess(res, category);
+      return ResponseHandler.success(res, category);
     } catch (error) {
       return errorHandler(res, error);
     }
@@ -48,7 +48,7 @@ export class CategoryController {
     try {
       const id = req.params.id as string;
       const category = await this.service.delete(id);
-      return ResponseHandler.sucess(res, category);
+      return ResponseHandler.success(res, category);
     } catch (error) {
       return errorHandler(res, error);
     }

@@ -20,7 +20,7 @@ export class UserController {
     try {
       const id = req.params.id as string;
       const user = await this.service.findById(id);
-      return ResponseHandler.sucess(res, user);
+      return ResponseHandler.success(res, user);
     } catch (error) {
       return errorHandler(res, error);
     }
@@ -29,7 +29,7 @@ export class UserController {
   async findAll(req: Request, res: Response) {
     try {
       const user = await this.service.findAll();
-      return ResponseHandler.sucess(res, user);
+      return ResponseHandler.success(res, user);
     } catch (error) {
       return errorHandler(res, error);
     }
@@ -48,7 +48,7 @@ export class UserController {
 
       const user = await this.service.update(id, req.body);
 
-      return ResponseHandler.sucess(res, user);
+      return ResponseHandler.success(res, user);
     } catch (error) {
       return errorHandler(res, error);
     }
@@ -66,7 +66,7 @@ export class UserController {
       }
 
       const user = await this.service.delete(id);
-      return ResponseHandler.sucess(res, user);
+      return ResponseHandler.success(res, user);
     } catch (error) {
       return errorHandler(res, error);
     }

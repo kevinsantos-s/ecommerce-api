@@ -15,6 +15,7 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   role          UserRole  @default(USER)
+  deletedAt     DateTime?
   addresses     Address[]
   cart          Cart?
   orders        Order[]
@@ -31,6 +32,7 @@ model Seller {
   status      SellerStatus @default(PENDING)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
   brands      Brand[]
   products    Product[]
   user        User         @relation(fields: [userId], references: [id])
@@ -44,9 +46,10 @@ model Product {
   brandId    String
   categoryId String
   createdAt  DateTime         @default(now())
-  image      String?
   updatedAt  DateTime         @updatedAt
   sellerId   String
+  deletedAt  DateTime?
+  isVisible  Boolean          @default(true)
   brand      Brand            @relation(fields: [brandId], references: [id])
   category   Category         @relation(fields: [categoryId], references: [id])
   seller     Seller           @relation(fields: [sellerId], references: [id])
@@ -64,6 +67,8 @@ model ProductVariant {
   productId  String
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
+  image      String?
+  deletedAt  DateTime?
   cartItems  CartItem[]
   orderItems OrderItem[]
   product    Product     @relation(fields: [productId], references: [id])
@@ -88,6 +93,7 @@ model Brand {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   sellerId  String
+  deletedAt DateTime?
   seller    Seller    @relation(fields: [sellerId], references: [id])
   products  Product[]
 

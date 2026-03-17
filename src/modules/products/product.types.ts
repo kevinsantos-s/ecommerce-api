@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { addVariantSchema, createProductSchema, updateProductSchema, updateVariantSchema } from "./product.schema";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export type CreateProductDTO = z.infer<typeof createProductSchema>
 export type UpdateProductDTO = z.infer<typeof updateProductSchema>
@@ -24,8 +25,8 @@ export type ProductResponseDTO = {
 
 export type VariantResponseDTO = {
     id: string;
-    price: number;
-    image: string;
+    price: Decimal;
+    image: string | null;
     color: string;
     size: string;
     stock: number;
